@@ -1,17 +1,21 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    kotlin("jvm") version "1.9.24"
-    id("io.papermc.paperweight.userdev") version "1.7.0"
-    id("xyz.jpenilla.run-paper") version "1.1.0"
+    kotlin("jvm") version "2.1.0-RC2"
+    id("io.papermc.paperweight.userdev") version "1.7.5"
+    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
 }
 
+val versionString = "1.0.0"
+
 group = "de.bypixeltv"
-version = "1.2.0"
+version = versionString
 
 repositories {
     mavenCentral()
+
     maven("https://jitpack.io")
-    maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/")
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+
     maven {
         name = "papermc"
         url = uri("https://repo.papermc.io/repository/maven-public/")
@@ -22,12 +26,15 @@ repositories {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
-    implementation("dev.jorel", "commandapi-bukkit-shade", "9.4.0")
-    implementation("dev.jorel", "commandapi-bukkit-kotlin", "9.4.0")
-    implementation("net.axay:kspigot:1.20.3")
-    implementation("com.github.SkriptLang:Skript:2.9.0-beta1-pre")
+    paperweight.paperDevBundle("1.21.3-R0.1-SNAPSHOT")
+
+    bukkitLibrary("dev.jorel", "commandapi-bukkit-shade-mojang-mapped", "9.6.1")
+    bukkitLibrary("dev.jorel", "commandapi-bukkit-kotlin", "9.6.1")
+    bukkitLibrary("net.axay:kspigot:1.21.0")
+
+    compileOnly("com.github.SkriptLang:Skript:2.9.4")
     compileOnly("com.github.koca2000:NoteBlockAPI:1.6.2")
+
 }
 
 sourceSets {
@@ -41,20 +48,39 @@ sourceSets {
     }
 }
 
+paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
+
 tasks {
-    assemble {
-        dependsOn(reobfJar)
-    }
     compileJava {
         options.encoding = "UTF-8"
-        options.release.set(17)
-        options.compilerArgs.add("-Xlint:deprecation")
+        options.release.set(21)
     }
+
     compileKotlin {
-        kotlinOptions.jvmTarget = "17"
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
+bukkit {
+    main = "de.bypixeltv.notesk.Main"
+
+    version = versionString
+
+    foliaSupported = false
+
+    apiVersion = "1.21"
+
+    authors = listOf("byPixelTV")
+
+    website = "https://github.com/byPixelTV/NoteSK"
+
+    description = "A Skript-Addon to player .nbs files using NoteBlockAPI."
+
+    depend = listOf("NoteBlockAPI", "Skript")
+
+    prefix = "NoteSK"
+}
+
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }

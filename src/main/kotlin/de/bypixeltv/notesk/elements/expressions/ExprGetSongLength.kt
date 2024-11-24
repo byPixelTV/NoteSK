@@ -1,10 +1,6 @@
 package de.bypixeltv.notesk.elements.expressions
 
 import ch.njol.skript.Skript
-import ch.njol.skript.doc.Description
-import ch.njol.skript.doc.Examples
-import ch.njol.skript.doc.Name
-import ch.njol.skript.doc.Since
 import ch.njol.skript.lang.Expression
 import ch.njol.skript.lang.ExpressionType
 import ch.njol.skript.lang.SkriptParser
@@ -17,13 +13,13 @@ import org.bukkit.event.Event
 import org.jetbrains.annotations.Nullable
 
 
-class ExprGetSongLenght : SimpleExpression<Number>() {
+class ExprGetSongLength : SimpleExpression<Number>() {
 
     companion object{
         init {
             Skript.registerExpression(
-                ExprGetSongLenght::class.java, Number::class.java,
-                ExpressionType.SIMPLE, "[(skmusic|nbs|notesk)] %player%['s] (song|music) (lenght|duration)")
+                ExprGetSongLength::class.java, Number::class.java,
+                ExpressionType.SIMPLE, "[(skmusic|nbs|notesk)] %player%['s] (song|music) (length|duration)")
         }
     }
 
@@ -47,12 +43,12 @@ class ExprGetSongLenght : SimpleExpression<Number>() {
     @Nullable
     override fun get(e: Event?): Array<out Number?> {
         val p = player!!.getSingle(e)
-        var lenght = 0
+        var length = 0
         if (Main.songPlayers.containsKey(p)) {
             val song: Song? = Main.songPlayers[p]?.song
-            lenght = (song?.length ?: 0).toInt()
+            length = (song?.length ?: 0).toInt()
         }
-        return arrayOf(lenght)
+        return arrayOf(length)
     }
 
     override fun getReturnType(): Class<out Number> {
@@ -60,7 +56,7 @@ class ExprGetSongLenght : SimpleExpression<Number>() {
     }
 
     override fun toString(e: Event?, debug: Boolean): String {
-        return "[(skmusic|nbs|notesk)] %player%['s] (song|music) (lenght|duration)"
+        return "[(skmusic|nbs|notesk)] %player%['s] (song|music) (length|duration)"
     }
 
 }
