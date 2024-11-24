@@ -87,6 +87,5 @@ class Main : KSpigot() {
     @Suppress("DEPRECATION")
     override fun shutdown() {
         CommandAPI.onDisable()
-        server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <dark_purple>Successfully disabled NoteSK v${this.description.version}!</dark_purple>"))
     }
 }
