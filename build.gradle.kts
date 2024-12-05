@@ -29,7 +29,7 @@ dependencies {
     paperweight.paperDevBundle("1.21.3-R0.1-SNAPSHOT")
 
     bukkitLibrary("dev.jorel", "commandapi-bukkit-shade-mojang-mapped", "9.7.0")
-    bukkitLibrary("dev.jorel", "commandapi-bukkit-kotlin", "9.6.1")
+    bukkitLibrary("dev.jorel", "commandapi-bukkit-kotlin", "9.7.0")
     bukkitLibrary("net.axay:kspigot:1.21.0")
 
     compileOnly("com.github.SkriptLang:Skript:2.9.4")
