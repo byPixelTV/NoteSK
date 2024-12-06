@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     kotlin("jvm") version "2.1.0"
-    id("io.papermc.paperweight.userdev") version "1.7.6"
+    id("io.papermc.paperweight.userdev") version "1.7.7"
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
 }
 
