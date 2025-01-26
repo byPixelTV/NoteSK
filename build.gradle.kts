@@ -2,11 +2,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     kotlin("jvm") version "2.1.0"
-    id("io.papermc.paperweight.userdev") version "1.7.7"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.14"
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
 }
 
-val versionString = "1.1.0"
+val versionString = "1.2.0"
 
 group = "de.bypixeltv"
 version = versionString
@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.21.3-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
 
     bukkitLibrary("dev.jorel", "commandapi-bukkit-shade-mojang-mapped", "9.7.0")
     bukkitLibrary("dev.jorel", "commandapi-bukkit-kotlin", "9.7.0")
