@@ -6,7 +6,7 @@ plugins {
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
 }
 
-val versionString = "1.2.0"
+val versionString = "1.1.1"
 
 group = "de.bypixeltv"
 version = versionString
