@@ -32,7 +32,7 @@ dependencies {
     bukkitLibrary("dev.jorel", "commandapi-bukkit-kotlin", "9.7.0")
     bukkitLibrary("net.axay:kspigot:1.21.0")
 
-    compileOnly("com.github.SkriptLang:Skript:2.10.2")
+    compileOnly("com.github.SkriptLang:Skript:2.11.0-pre1")
     compileOnly("com.github.koca2000:NoteBlockAPI:1.6.3")
 
 }
