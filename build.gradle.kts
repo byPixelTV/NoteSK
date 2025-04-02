@@ -28,8 +28,8 @@ repositories {
 dependencies {
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
 
-    bukkitLibrary("dev.jorel", "commandapi-bukkit-shade-mojang-mapped", "10.0.0")
-    bukkitLibrary("dev.jorel", "commandapi-bukkit-kotlin", "9.7.0")
+    bukkitLibrary("dev.jorel", "commandapi-bukkit-shade-mojang-mapped", "9.7.0")
+    bukkitLibrary("dev.jorel", "commandapi-bukkit-kotlin", "10.0.0")
     bukkitLibrary("net.axay:kspigot:1.21.0")
 
     compileOnly("com.github.SkriptLang:Skript:2.10.2")
