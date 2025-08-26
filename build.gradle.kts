@@ -2,13 +2,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     kotlin("jvm") version "2.2.10"
-    id("io.papermc.paperweight.userdev") version "2.0.0-SNAPSHOT"
-    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
+    id("de.eldoria.plugin-yml.bukkit") version "0.8.0"
 }
 
-val versionString = "1.1.1"
+val versionString = "1.2.0"
 
-group = "de.bypixeltv"
+group = "dev.bypixel"
 version = versionString
 
 repositories {
@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
 
     bukkitLibrary("dev.jorel", "commandapi-bukkit-shade-mojang-mapped", "10.1.2")
     bukkitLibrary("dev.jorel", "commandapi-bukkit-kotlin", "10.1.2")
@@ -62,7 +62,7 @@ tasks {
 }
 
 bukkit {
-    main = "de.bypixeltv.notesk.Main"
+    main = "dev.bypixel.notesk.Main"
 
     version = versionString
 
