@@ -10,15 +10,19 @@ import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPIBukkitConfig
 import net.axay.kspigot.main.KSpigot
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import java.io.File
 import java.io.IOException
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
 
 class Main : KSpigot() {
 
     private val miniMessages = MiniMessage.miniMessage()
 
     private var addon: SkriptAddon? = null
+    lateinit var songsDir: File
 
     var instance: Main? = null
 
@@ -39,7 +43,16 @@ class Main : KSpigot() {
     @Suppress("DEPRECATION")
     override fun startup() {
         saveDefaultConfig()
+        mergeMissingConfigKeys()
         CommandAPI.onEnable()
+
+        val rootServerFolder = server.worldContainer
+        val configSongsPath = config.getString("songs-dir")
+        songsDir = if (configSongsPath.isNullOrEmpty()) {
+            File(rootServerFolder, "plugins/NoteSK/songs")
+        } else {
+            File(rootServerFolder, configSongsPath)
+        }
 
         this.instance = this
         this.addon = Skript.registerAddon(this)
@@ -57,7 +70,6 @@ class Main : KSpigot() {
             server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <color:#43fa00>Creating NoteSK folder...</color>"))
             dir.mkdirs()
         }
-        val songsDir = File(this.dataFolder, "songs")
         if (!songsDir.exists()) {
             server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <color:#43fa00>Creating songs folder...</color>"))
             songsDir.mkdirs()
@@ -87,5 +99,37 @@ class Main : KSpigot() {
     @Suppress("DEPRECATION")
     override fun shutdown() {
         CommandAPI.onDisable()
+    }
+
+    private fun mergeMissingConfigKeys() {
+        val configFile = File(dataFolder, "config.yml")
+        if (!configFile.exists()) {
+            saveDefaultConfig()
+        }
+
+        val jarStream = getResource("config.yml") ?: return
+        val defaults = YamlConfiguration.loadConfiguration(InputStreamReader(jarStream, StandardCharsets.UTF_8))
+        jarStream.close()
+
+        val fileConfig = YamlConfiguration.loadConfiguration(configFile)
+
+        var changed = false
+        for (path in defaults.getKeys(true)) {
+            if (defaults.isConfigurationSection(path)) continue
+            if (!fileConfig.contains(path)) {
+                fileConfig.set(path, defaults.get(path))
+                changed = true
+            }
+        }
+
+        if (changed) {
+            fileConfig.save(configFile)
+            reloadConfig()
+            server.consoleSender.sendMessage(
+                MiniMessage.miniMessage().deserialize(
+                    "<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <green>Missing config keys were added to NoteSK's config.yml</green>"
+                )
+            )
+        }
     }
 }

@@ -62,7 +62,7 @@ class EffPlayNbsInRadius : Effect() {
         if (!fileName.contains(".nbs")) {
             fileName = "$fileName.nbs"
         }
-        val music = File(Main.INSTANCE.dataFolder, "songs/$fileName")
+        val music = File(Main.INSTANCE.songsDir, fileName)
         if (!music.exists()) {
             Main.INSTANCE.server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<aqua>NoteSK</aqua>]</grey> <color:#ff0000>Error while trying to load the song <yellow>$fileName</yellow>! Does the file exist?"))
         } else {
