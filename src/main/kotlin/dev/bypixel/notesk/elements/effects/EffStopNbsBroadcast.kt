@@ -18,9 +18,6 @@ import org.jetbrains.annotations.Nullable
 @Description("Stop all songs from being broadcasting to all players on the server.")
 @Since("1.0.0")
 class EffStopNbsBroadcast : Effect() {
-
-    private val miniMessages = MiniMessage.miniMessage()
-
     companion object{
         init {
             Skript.registerEffect(EffStopNbsBroadcast::class.java, "[(skmusic|nbs|notesk)] stop broadcast[ing] (song|music)")
