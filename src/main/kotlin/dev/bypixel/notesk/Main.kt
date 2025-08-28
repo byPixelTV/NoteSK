@@ -20,9 +20,9 @@ import java.nio.charset.StandardCharsets
 class Main : KSpigot() {
 
     private val miniMessages = MiniMessage.miniMessage()
-
     private var addon: SkriptAddon? = null
     lateinit var songsDir: File
+        private set
 
     var instance: Main? = null
 
@@ -34,9 +34,7 @@ class Main : KSpigot() {
 
     override fun load() {
         CommandAPI.onLoad(CommandAPIBukkitConfig(this).silentLogs(true).verboseOutput(true))
-
         INSTANCE = this
-
         Commands()
     }
 
@@ -44,35 +42,28 @@ class Main : KSpigot() {
     override fun startup() {
         saveDefaultConfig()
         mergeMissingConfigKeys()
-        CommandAPI.onEnable()
+        reloadConfig()
+        initSongsDir()
 
-        val rootServerFolder = server.worldContainer
-        val configSongsPath = config.getString("songs-dir")
-        songsDir = if (configSongsPath.isNullOrEmpty()) {
-            File(rootServerFolder, "plugins/NoteSK/songs")
-        } else {
-            File(rootServerFolder, configSongsPath)
-        }
+        CommandAPI.onEnable()
 
         this.instance = this
         this.addon = Skript.registerAddon(this)
-        val localAddon = this.addon
         try {
-            localAddon?.loadClasses("dev.bypixel.notesk", "elements")
+            addon?.loadClasses("dev.bypixel.notesk", "elements")
         } catch (e: IOException) {
             e.printStackTrace()
         }
 
-        server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <dark_purple>Successfully enabled NoteSK v${this.description.version}!</dark_purple>"))
+        server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <dark_purple>Successfully enabled NoteSK v${description.version}!</dark_purple>"))
         Metrics(this, 21632)
-        val dir: File = this.dataFolder
-        if (!dir.exists()) {
-            server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <color:#43fa00>Creating NoteSK folder...</color>"))
-            dir.mkdirs()
+
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs()
         }
         if (!songsDir.exists()) {
-            server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <color:#43fa00>Creating songs folder...</color>"))
             songsDir.mkdirs()
+            server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <color:#43fa00>Created songs folder at: ${songsDir.path}</color>"))
         }
 
         IngameUpdateChecker
@@ -84,12 +75,9 @@ class Main : KSpigot() {
         }
 
         UpdateChecker.checkForUpdate(version)
-
         Metrics(this, 21632)
 
-        val pluginManager = server.pluginManager
-        val noteblockAPIPlugin = pluginManager.getPlugin("NoteBlockAPI")
-
+        val noteblockAPIPlugin = server.pluginManager.getPlugin("NoteBlockAPI")
         if (noteblockAPIPlugin == null) {
             server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <red>NoteblockAPI is not installed, please install it to use NoteSK</red>"))
             server.pluginManager.disablePlugin(this)
@@ -101,16 +89,41 @@ class Main : KSpigot() {
         CommandAPI.onDisable()
     }
 
+    private fun initSongsDir() {
+        val raw = config.getString("songs-dir")?.trim()
+        val defaultDir = File(dataFolder, "songs")
+        songsDir = when {
+            raw.isNullOrEmpty() -> {
+                logSongsDirReason("songs dir key missing or empty -> Default")
+                defaultDir
+            }
+            raw.equals("default", true) -> {
+                logSongsDirReason("Value 'default'")
+                defaultDir
+            }
+            else -> {
+                val candidate = File(raw)
+                val resolved = if (candidate.isAbsolute) candidate else File(server.worldContainer, raw)
+                logSongsDirReason("Config value '$raw' -> using '${resolved.path}' (abs=${resolved.isAbsolute})")
+                resolved
+            }
+        }
+    }
+
+    private fun logSongsDirReason(msg: String) {
+        server.consoleSender.sendMessage(
+            miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <grey>songs-dir: $msg</grey>")
+        )
+    }
+
     private fun mergeMissingConfigKeys() {
         val configFile = File(dataFolder, "config.yml")
         if (!configFile.exists()) {
             saveDefaultConfig()
         }
-
         val jarStream = getResource("config.yml") ?: return
         val defaults = YamlConfiguration.loadConfiguration(InputStreamReader(jarStream, StandardCharsets.UTF_8))
         jarStream.close()
-
         val fileConfig = YamlConfiguration.loadConfiguration(configFile)
 
         var changed = false
@@ -121,14 +134,10 @@ class Main : KSpigot() {
                 changed = true
             }
         }
-
         if (changed) {
             fileConfig.save(configFile)
-            reloadConfig()
             server.consoleSender.sendMessage(
-                MiniMessage.miniMessage().deserialize(
-                    "<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <green>Missing config keys were added to NoteSK's config.yml</green>"
-                )
+                miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <green>Missing config keys were added.</green>")
             )
         }
     }
