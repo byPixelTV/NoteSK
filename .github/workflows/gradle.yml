@@ -1,37 +1,145 @@
-name: Java CI with Gradle
+name: Build, Release & Publish Modrinth
+
+permissions:
+  contents: write
+  packages: write
+  actions: write
 
 on:
   push:
-    branches: [ '**' ]
-  pull_request:
-    branches: [ '**' ]
-
-permissions:
-  contents: read
+    branches:
+      - release
+      - nightly
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
+  build_release:
+    runs-on: self-hosted
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all Git tags
+        run: git fetch --tags
+
+      - name: Check for new commits since last tag
+        if: github.ref == 'refs/heads/release'
+        id: check_commits
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
+
+          if [ -z "$LAST_TAG" ]; then
+            echo "no_last_tag=true" >> $GITHUB_OUTPUT
+          else
+            NEW_COMMITS=$(git log ${LAST_TAG}..HEAD --oneline)
+            if [ -z "$NEW_COMMITS" ]; then
+              echo "no_new_commits=true" >> $GITHUB_OUTPUT
+            else
+              echo "no_new_commits=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Get next version
+        if: github.ref == 'refs/heads/release' && steps.check_commits.outputs.no_new_commits != 'true'
+        id: version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: release
+          tag_prefix: "v"
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v5.0.0
+        uses: actions/setup-java@v5
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: 21
+          distribution: temurin
+          cache: gradle
 
-      - name: Make Gradle wrapper executable
-        run: chmod +x gradlew
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build Gradle projects
+        run: bash ./gradlew shadowJar
 
-      - name: Upload a Build Artifact
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: NoteSK-Dev-Build [CLICK TO DOWNLOAD]
-          path: build/libs/NoteSK-*.jar
+          name: build-artifacts
+          path: build/libs/*.jar
+
+      - name: Generate changelog
+        if: github.ref == 'refs/heads/release' && steps.check_commits.outputs.no_new_commits != 'true'
+        id: changelog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PREV_TAG=${{ steps.check_commits.outputs.last_tag }}
+          CURR_TAG=${{ steps.version.outputs.new_tag }}
+
+          echo "> [!IMPORTANT]" > RELEASE_NOTES.md
+          echo "> # 📢 ABOUT THE ADDON 🍇:" >> RELEASE_NOTES.md
+          echo "> - NoteSK is a Skript-Addon to play .nbs files using NoteBlockAPI, so you have to install it on your server" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "> [!CAUTION]" >> RELEASE_NOTES.md
+          echo "> # ☁️ Information 🚩:" >> RELEASE_NOTES.md
+          echo "> - You will need the [NoteBlockAPI plugin](https://www.spigotmc.org/resources/noteblockapi.19287/) for the addon to work" >> RELEASE_NOTES.md
+          echo "# 🍽️ Patches & Fixes 🧑🏼‍🍳:" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+
+          git log ${PREV_TAG}..HEAD --pretty=format:"%H|%s" | while IFS="|" read -r COMMIT_HASH MESSAGE; do
+            AUTHOR_LOGIN=$(gh api repos/${{ github.repository }}/commits/$COMMIT_HASH --jq '.author.login // empty')
+            AUTHOR_NAME=$(gh api repos/${{ github.repository }}/commits/$COMMIT_HASH --jq '.commit.author.name // empty')
+
+            if [[ "$AUTHOR_LOGIN" == *"bot"* ]]; then
+              echo "- $MESSAGE ([${COMMIT_HASH:0:7}](https://github.com/${{ github.repository }}/commit/$COMMIT_HASH)) by $AUTHOR_NAME" >> RELEASE_NOTES.md
+            else
+              if [[ -n "$AUTHOR_LOGIN" ]]; then
+                echo "- $MESSAGE ([${COMMIT_HASH:0:7}](https://github.com/${{ github.repository }}/commit/$COMMIT_HASH)) by @$AUTHOR_LOGIN" >> RELEASE_NOTES.md
+              else
+                echo "- $MESSAGE ([${COMMIT_HASH:0:7}](https://github.com/${{ github.repository }}/commit/$COMMIT_HASH)) by $AUTHOR_NAME" >> RELEASE_NOTES.md
+              fi
+            fi
+          done
+
+          echo "" >> RELEASE_NOTES.md
+          echo "- **Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${CURR_TAG}" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "> [!IMPORTANT]" >> RELEASE_NOTES.md
+          echo "> # ⛏️ Minecraft Support 🎮:" >> RELEASE_NOTES.md
+          echo "> - NoteSK is only compatible with Minecraft version **1.21.8+**" >> RELEASE_NOTES.md
+          echo "> - I will only support the latest release of Minecraft, this mean that **1.21.8+ is** supported, but **1.21 isn't!** If you want to get official support, you have to use the latest version of **Skript, NoteSK, NoteBlockAPI and Minecraft!**" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "> # 📝 Skript Support 📑:" >> RELEASE_NOTES.md
+          echo "> - This version requires Skript 2.13+ to correctly run on your server" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "> [!TIP]" >> RELEASE_NOTES.md
+          echo "> # 🔥 Other stuff 🎉:" >> RELEASE_NOTES.md
+          echo "> - If you find any bugs tell me on [Discord](https://dsc.gg/byPixelTV) or use the GitHub issue tracker." >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "> [!NOTE]" >> RELEASE_NOTES.md
+          echo "> # 💻 Development Builds 🌐:" >> RELEASE_NOTES.md
+          echo "> - **Development  Builds:** https://github.com/byPixelTV/NoteSK/actions" >> RELEASE_NOTES.md
+
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/release' && steps.check_commits.outputs.no_new_commits != 'true'
+        id: github_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.new_tag }}
+          name: "NoteSK | ${{ steps.version.outputs.new_tag }} Release"
+          body_path: RELEASE_NOTES.md
+          files: build/libs/*.jar
+
+      - name: Prepare artifact filename
+        if: github.re1f == 'refs/heads/release' && steps.check_commits.outputs.no_new_commits != 'true'
+        id: artifact_name
+        run: |
+          TAG=${{ steps.version.outputs.new_tag }}
+          STRIPPED=${TAG#v}
+
+          cp build/libs/*.jar "NoteSK-${STRIPPED}.jar"
+          
+          echo "jar=NoteSK-${STRIPPED}.jar" >> $GITHUB_OUTPUT
