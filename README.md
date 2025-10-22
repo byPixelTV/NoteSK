@@ -7,8 +7,7 @@
 </a>
 </a>
 
-
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/byPixelTV/NoteSK/gradle.yml?style=for-the-badge)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/byPixelTV/NoteSK/gradle.yml?branch=release&style=for-the-badge)
 ![GitHub issues](https://img.shields.io/github/issues-raw/byPixelTV/NoteSK?style=for-the-badge)
 ![GitHub All Downloads](https://img.shields.io/github/downloads/byPixelTV/NoteSK/total?style=for-the-badge)
 
