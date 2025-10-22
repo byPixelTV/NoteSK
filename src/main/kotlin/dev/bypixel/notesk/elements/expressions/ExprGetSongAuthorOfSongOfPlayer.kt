@@ -15,16 +15,16 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.jetbrains.annotations.Nullable
 
-@Name("get song title")
-@Description("Get the title of any note block songs for a player.")
+@Name("get song author")
+@Description("Get the author of any note block songs for a player.")
 @Since("1.0.0")
-class ExprGetSongTitle : SimpleExpression<String>() {
+class ExprGetSongAuthorOfSongOfPlayer : SimpleExpression<String>() {
 
     companion object{
         init {
             Skript.registerExpression(
-                ExprGetSongTitle::class.java, String::class.java,
-                ExpressionType.SIMPLE, "[(skmusic|nbs|notesk)] %player%['s] (song|music) title")
+                ExprGetSongAuthorOfSongOfPlayer::class.java, String::class.java,
+                ExpressionType.SIMPLE, "[(skmusic|nbs|notesk)] %player%['s] (song|music) author")
         }
     }
 
@@ -48,12 +48,12 @@ class ExprGetSongTitle : SimpleExpression<String>() {
     @Nullable
     override fun get(e: Event?): Array<out String?> {
         val p = player!!.getSingle(e)
-        var title = "none"
+        var author = "none"
         if (Main.songPlayers.containsKey(p)) {
             val song: Song? = Main.songPlayers[p]?.song
-            title = song?.title ?: "none"
+            author = song?.author ?: "none"
         }
-        return arrayOf(title)
+        return arrayOf(author)
     }
 
     override fun getReturnType(): Class<out String> {
@@ -61,7 +61,7 @@ class ExprGetSongTitle : SimpleExpression<String>() {
     }
 
     override fun toString(e: Event?, debug: Boolean): String {
-        return "[(skmusic|nbs|notesk)] %player%['s] (song|music) title"
+        return "[(skmusic|nbs|notesk)] %player%['s] (song|music) author"
     }
 
 }

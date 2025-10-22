@@ -28,13 +28,14 @@ class EffPlayNbs : Effect() {
 
     companion object{
         init {
-            Skript.registerEffect(EffPlayNbs::class.java, "[(skmusic|nbs|notesk)] play (song|music) %string% to %player% [at tick %number%]")
+            Skript.registerEffect(EffPlayNbs::class.java, "[(skmusic|nbs|notesk)] play (song|music) %string% to %player% [at tick %number%] [in directory %string%]")
         }
     }
 
     private var song: Expression<String>? = null
     private var player: Expression<Player>? = null
     private var tick: Expression<Number>? = null
+    private var directory: Expression<String>? = null
 
     @Suppress("UNCHECKED_CAST")
     override fun init(
@@ -46,11 +47,12 @@ class EffPlayNbs : Effect() {
         this.song = expressions[0] as Expression<String>
         this.player = expressions[1] as Expression<Player>
         this.tick = expressions[2] as Expression<Number>
+        this.directory = expressions[3] as Expression<String>
         return true
     }
 
     override fun toString(@Nullable e: Event?, b: Boolean): String {
-        return "[(skmusic|nbs|notesk)] play (song|music) %string% to %player%"
+        return "[(skmusic|nbs|notesk)] play (song|music) %string% to %player% [at tick %number%] [in directory %string%]"
     }
     public override fun execute(e: Event?) {
         val p: Player = player?.getSingle(e) ?: return
@@ -58,7 +60,16 @@ class EffPlayNbs : Effect() {
         if (!fileName.endsWith(".nbs")) {
             fileName = "$fileName.nbs"
         }
-        val music = File(Main.INSTANCE.songsDir, fileName)
+        val music = if (directory != null) {
+            val dir = directory?.getSingle(e).toString()
+            val folder = File(Main.INSTANCE.server.worldContainer, dir)
+            if (!folder.exists()) {
+                folder.mkdirs()
+            }
+            File(folder, fileName)
+        } else {
+            File(Main.INSTANCE.songsDir, fileName)
+        }
         if (!music.exists()) {
             Main.INSTANCE.server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<aqua>NoteSK</aqua>]</grey> <color:#ff0000>Error while trying to load the song <yellow>$fileName</yellow>! Does the file exist?"))
         } else {

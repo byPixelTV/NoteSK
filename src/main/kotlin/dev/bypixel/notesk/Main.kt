@@ -38,7 +38,6 @@ class Main : KSpigot() {
         Commands()
     }
 
-    @Suppress("DEPRECATION")
     override fun startup() {
         saveDefaultConfig()
         mergeMissingConfigKeys()
@@ -55,7 +54,7 @@ class Main : KSpigot() {
             e.printStackTrace()
         }
 
-        server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <dark_purple>Successfully enabled NoteSK v${description.version}!</dark_purple>"))
+        server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <dark_purple>Successfully enabled NoteSK v${pluginMeta.version}!</dark_purple>"))
         Metrics(this, 21632)
 
         if (!dataFolder.exists()) {
@@ -68,7 +67,7 @@ class Main : KSpigot() {
 
         IngameUpdateChecker
 
-        val version = description.version
+        val version = pluginMeta.version
         if (version.contains("-")) {
             server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <yellow>This is a BETA build, things may not work as expected, please report any bugs on GitHub</yellow>"))
             server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <yellow>https://github.com/byPixelTV/NoteSK/issues</yellow>"))

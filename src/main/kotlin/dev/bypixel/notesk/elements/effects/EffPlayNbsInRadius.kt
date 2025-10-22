@@ -29,7 +29,7 @@ class EffPlayNbsInRadius : Effect() {
 
     companion object{
         init {
-            Skript.registerEffect(EffPlayNbsInRadius::class.java, "[(skmusic|nbs|notesk)] play (song|music) %string% to [all] players in radius %integer% around [location] %location% [at tick %number%]")
+            Skript.registerEffect(EffPlayNbsInRadius::class.java, "[(skmusic|nbs|notesk)] play (song|music) %string% to [all] players in radius %integer% around [location] %location% [at tick %number%] [in directory %string%]")
         }
     }
 
@@ -37,6 +37,7 @@ class EffPlayNbsInRadius : Effect() {
     private var loc: Expression<Location>? = null
     private var rad: Expression<Int>? = null
     private var tick: Expression<Number>? = null
+    private var directory: Expression<String>? = null
 
     @Suppress("UNCHECKED_CAST")
     override fun init(
@@ -49,11 +50,12 @@ class EffPlayNbsInRadius : Effect() {
         this.loc = expressions[1] as Expression<Location>
         this.rad = expressions[2] as Expression<Int>
         this.tick = expressions[3] as Expression<Number>
+        this.directory = expressions[4] as Expression<String>
         return true
     }
 
     override fun toString(@Nullable e: Event?, b: Boolean): String {
-        return "[(skmusic|nbs|notesk)] play (song|music) %string% to [all] players in radius %integer% around [location] %location%"
+        return "[(skmusic|nbs|notesk)] play (song|music) %string% to [all] players in radius %integer% around [location] %location% [at tick %number%] [in directory %string%]"
     }
     public override fun execute(e: Event?) {
         val location: Location? = loc?.getSingle(e)
@@ -62,7 +64,16 @@ class EffPlayNbsInRadius : Effect() {
         if (!fileName.contains(".nbs")) {
             fileName = "$fileName.nbs"
         }
-        val music = File(Main.INSTANCE.songsDir, fileName)
+        val music = if (directory != null) {
+            val dir = directory?.getSingle(e).toString()
+            val folder = File(Main.INSTANCE.server.worldContainer, dir)
+            if (!folder.exists()) {
+                folder.mkdirs()
+            }
+            File(folder, fileName)
+        } else {
+            File(Main.INSTANCE.songsDir, fileName)
+        }
         if (!music.exists()) {
             Main.INSTANCE.server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<aqua>NoteSK</aqua>]</grey> <color:#ff0000>Error while trying to load the song <yellow>$fileName</yellow>! Does the file exist?"))
         } else {

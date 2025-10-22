@@ -29,12 +29,13 @@ class EffBroadcastNbs : Effect() {
 
     companion object{
         init {
-            Skript.registerEffect(EffBroadcastNbs::class.java, "[(skmusic|nbs|notesk)] broadcast (song|music) %string% [at tick %number%]")
+            Skript.registerEffect(EffBroadcastNbs::class.java, "[(skmusic|nbs|notesk)] broadcast (song|music) %string% [at tick %number%] [in directory %string%]")
         }
     }
 
     private var song: Expression<String>? = null
     private var tick: Expression<Number>? = null
+    private var directory: Expression<String>? = null
 
     @Suppress("UNCHECKED_CAST")
     override fun init(
@@ -45,18 +46,28 @@ class EffBroadcastNbs : Effect() {
     ): Boolean {
         this.song = expressions[0] as Expression<String>
         this.tick = expressions[1] as Expression<Number>
+        this.directory = expressions[2] as Expression<String>
         return true
     }
 
     override fun toString(@Nullable e: Event?, b: Boolean): String {
-        return "[(skmusic|nbs|notesk)] broadcast (song|music) %string% [at tick %number%]"
+        return "[(skmusic|nbs|notesk)] broadcast (song|music) %string% [at tick %number%] [in directory %string%]"
     }
     public override fun execute(e: Event?) {
         var fileName: String = song?.getSingle(e).toString()
         if (!fileName.contains(".nbs")) {
             fileName = "$fileName.nbs"
         }
-        val music = File(Main.INSTANCE.songsDir, fileName)
+        val music = if (directory != null) {
+            val dir = directory?.getSingle(e).toString()
+            val folder = File(Main.INSTANCE.server.worldContainer, dir)
+            if (!folder.exists()) {
+                folder.mkdirs()
+            }
+            File(folder, fileName)
+        } else {
+            File(Main.INSTANCE.songsDir, fileName)
+        }
         if (!music.exists()) {
             Main.INSTANCE.server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<aqua>NoteSK</aqua>]</grey> <color:#ff0000>Error while trying to load the song <yellow>$fileName</yellow>! Does the file exist?"))
         } else {

@@ -15,16 +15,16 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.jetbrains.annotations.Nullable
 
-@Name("get song length")
-@Description("Get the current song lenght of a player")
+@Name("get song title")
+@Description("Get the title of any note block songs for a player.")
 @Since("1.0.0")
-class ExprGetSongLength : SimpleExpression<Number>() {
+class ExprGetSongTitleOfSongOfPlayer : SimpleExpression<String>() {
 
     companion object{
         init {
             Skript.registerExpression(
-                ExprGetSongLength::class.java, Number::class.java,
-                ExpressionType.SIMPLE, "[(skmusic|nbs|notesk)] %player%['s] (song|music) (length|duration)")
+                ExprGetSongTitleOfSongOfPlayer::class.java, String::class.java,
+                ExpressionType.SIMPLE, "[(skmusic|nbs|notesk)] %player%['s] (song|music) title")
         }
     }
 
@@ -46,22 +46,22 @@ class ExprGetSongLength : SimpleExpression<Number>() {
     }
 
     @Nullable
-    override fun get(e: Event?): Array<out Number?> {
+    override fun get(e: Event?): Array<out String?> {
         val p = player!!.getSingle(e)
-        var length = 0
+        var title = "none"
         if (Main.songPlayers.containsKey(p)) {
             val song: Song? = Main.songPlayers[p]?.song
-            length = (song?.length ?: 0).toInt()
+            title = song?.title ?: "none"
         }
-        return arrayOf(length)
+        return arrayOf(title)
     }
 
-    override fun getReturnType(): Class<out Number> {
-        return Number::class.java
+    override fun getReturnType(): Class<out String> {
+        return String::class.java
     }
 
     override fun toString(e: Event?, debug: Boolean): String {
-        return "[(skmusic|nbs|notesk)] %player%['s] (song|music) (length|duration)"
+        return "[(skmusic|nbs|notesk)] %player%['s] (song|music) title"
     }
 
 }

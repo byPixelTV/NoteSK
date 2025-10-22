@@ -15,16 +15,16 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.jetbrains.annotations.Nullable
 
-@Name("get song speed")
-@Description("Get the current song speed of a player")
+@Name("get song length")
+@Description("Get the current song lenght of a player")
 @Since("1.0.0")
-class ExprGetSongSpeed : SimpleExpression<Number>() {
+class ExprGetSongLengthOfSongOfPlayer : SimpleExpression<Number>() {
 
     companion object{
         init {
             Skript.registerExpression(
-                ExprGetSongSpeed::class.java, Number::class.java,
-                ExpressionType.SIMPLE, "[(skmusic|nbs|notesk)] %player%['s] (song|music) speed")
+                ExprGetSongLengthOfSongOfPlayer::class.java, Number::class.java,
+                ExpressionType.SIMPLE, "[(skmusic|nbs|notesk)] %player%['s] (song|music) (length|duration)")
         }
     }
 
@@ -48,12 +48,12 @@ class ExprGetSongSpeed : SimpleExpression<Number>() {
     @Nullable
     override fun get(e: Event?): Array<out Number?> {
         val p = player!!.getSingle(e)
-        var speed = 0.0F
+        var length = 0
         if (Main.songPlayers.containsKey(p)) {
             val song: Song? = Main.songPlayers[p]?.song
-            speed = (song?.speed ?: 0.0F)
+            length = (song?.length ?: 0).toInt()
         }
-        return arrayOf(speed)
+        return arrayOf(length)
     }
 
     override fun getReturnType(): Class<out Number> {
@@ -61,7 +61,7 @@ class ExprGetSongSpeed : SimpleExpression<Number>() {
     }
 
     override fun toString(e: Event?, debug: Boolean): String {
-        return "[(skmusic|nbs|notesk)] %player%['s] (song|music) speed"
+        return "[(skmusic|nbs|notesk)] %player%['s] (song|music) (length|duration)"
     }
 
 }
