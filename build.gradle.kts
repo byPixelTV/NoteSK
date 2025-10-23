@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.2.20"
+    kotlin("jvm") version "2.2.21"
     id("io.papermc.paperweight.userdev") version "2.0.0-SNAPSHOT"
     id("de.eldoria.plugin-yml.bukkit") version "0.8.0"
 }
