@@ -29,7 +29,7 @@ class EffPlayNbsInRadius : Effect() {
 
     companion object{
         init {
-            Skript.registerEffect(EffPlayNbsInRadius::class.java, "[(skmusic|nbs|notesk)] play (song|music) %string% to [all] players in radius %integer% around [location] %location% [at tick %number%] [in directory %string%]")
+            Skript.registerEffect(EffPlayNbsInRadius::class.java, "[(skmusic|nbs|notesk)] play (song|music) %string% to [all] players in radius %integer% around [location] %location% [at tick %number%] [in directory %-string%]")
         }
     }
 
@@ -55,7 +55,7 @@ class EffPlayNbsInRadius : Effect() {
     }
 
     override fun toString(@Nullable e: Event?, b: Boolean): String {
-        return "[(skmusic|nbs|notesk)] play (song|music) %string% to [all] players in radius %integer% around [location] %location% [at tick %number%] [in directory %string%]"
+        return "[(skmusic|nbs|notesk)] play (song|music) %string% to [all] players in radius %integer% around [location] %location% [at tick %number%] [in directory %-string%]"
     }
     public override fun execute(e: Event?) {
         val location: Location? = loc?.getSingle(e)

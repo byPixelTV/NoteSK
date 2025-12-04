@@ -29,7 +29,7 @@ class EffBroadcastNbs : Effect() {
 
     companion object{
         init {
-            Skript.registerEffect(EffBroadcastNbs::class.java, "[(skmusic|nbs|notesk)] broadcast (song|music) %string% [at tick %number%] [in directory %string%]")
+            Skript.registerEffect(EffBroadcastNbs::class.java, "[(skmusic|nbs|notesk)] broadcast (song|music) %string% [at tick %number%] [in directory %-string%]")
         }
     }
 
@@ -51,7 +51,7 @@ class EffBroadcastNbs : Effect() {
     }
 
     override fun toString(@Nullable e: Event?, b: Boolean): String {
-        return "[(skmusic|nbs|notesk)] broadcast (song|music) %string% [at tick %number%] [in directory %string%]"
+        return "[(skmusic|nbs|notesk)] broadcast (song|music) %string% [at tick %number%] [in directory %-string%]"
     }
     public override fun execute(e: Event?) {
         var fileName: String = song?.getSingle(e).toString()

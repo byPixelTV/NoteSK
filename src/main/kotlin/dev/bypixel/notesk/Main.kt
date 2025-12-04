@@ -7,7 +7,7 @@ import dev.bypixel.notesk.commands.Commands
 import dev.bypixel.notesk.utils.IngameUpdateChecker
 import dev.bypixel.notesk.utils.UpdateChecker
 import dev.jorel.commandapi.CommandAPI
-import dev.jorel.commandapi.CommandAPIBukkitConfig
+import dev.jorel.commandapi.CommandAPIPaperConfig
 import net.axay.kspigot.main.KSpigot
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.configuration.file.YamlConfiguration
@@ -33,12 +33,15 @@ class Main : KSpigot() {
     }
 
     override fun load() {
-        CommandAPI.onLoad(CommandAPIBukkitConfig(this).silentLogs(true).verboseOutput(true))
+        CommandAPI.onLoad(CommandAPIPaperConfig(this).silentLogs(true).verboseOutput(true).setNamespace("notesk"))
+
         INSTANCE = this
         Commands()
     }
 
     override fun startup() {
+        instance = this
+
         saveDefaultConfig()
         mergeMissingConfigKeys()
         reloadConfig()
@@ -46,7 +49,6 @@ class Main : KSpigot() {
 
         CommandAPI.onEnable()
 
-        this.instance = this
         this.addon = Skript.registerAddon(this)
         try {
             addon?.loadClasses("dev.bypixel.notesk", "elements")
@@ -68,12 +70,13 @@ class Main : KSpigot() {
         IngameUpdateChecker
 
         val version = pluginMeta.version
-        if (version.contains("-")) {
+        if (version.contains("+")) {
             server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <yellow>This is a BETA build, things may not work as expected, please report any bugs on GitHub</yellow>"))
             server.consoleSender.sendMessage(miniMessages.deserialize("<grey>[<dark_purple>NoteSK</dark_purple>]</grey> <yellow>https://github.com/byPixelTV/NoteSK/issues</yellow>"))
+        } else {
+            UpdateChecker.checkForUpdate(version)
         }
 
-        UpdateChecker.checkForUpdate(version)
         Metrics(this, 21632)
 
         val noteblockAPIPlugin = server.pluginManager.getPlugin("NoteBlockAPI")

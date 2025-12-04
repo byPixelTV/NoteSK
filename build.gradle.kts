@@ -74,11 +74,13 @@ repositories {
     }
 }
 
+val commandAPIVersion = "11.0.0"
+
 dependencies {
     paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
 
-    bukkitLibrary("dev.jorel", "commandapi-bukkit-shade-mojang-mapped", "10.1.2")
-    bukkitLibrary("dev.jorel", "commandapi-bukkit-kotlin", "10.1.2")
+    bukkitLibrary("dev.jorel:commandapi-paper-shade:$commandAPIVersion")
+    bukkitLibrary("dev.jorel:commandapi-kotlin-paper:$commandAPIVersion")
     bukkitLibrary("net.axay:kspigot:1.21.0")
 
     compileOnly("com.github.SkriptLang:Skript:2.13.2")

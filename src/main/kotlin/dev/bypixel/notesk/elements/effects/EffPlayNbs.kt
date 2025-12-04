@@ -28,7 +28,7 @@ class EffPlayNbs : Effect() {
 
     companion object{
         init {
-            Skript.registerEffect(EffPlayNbs::class.java, "[(skmusic|nbs|notesk)] play (song|music) %string% to %player% [at tick %number%] [in directory %string%]")
+            Skript.registerEffect(EffPlayNbs::class.java, "[(skmusic|nbs|notesk)] play (song|music) %string% to %player% [at tick %number%] [in directory %-string%]")
         }
     }
 
@@ -52,7 +52,7 @@ class EffPlayNbs : Effect() {
     }
 
     override fun toString(@Nullable e: Event?, b: Boolean): String {
-        return "[(skmusic|nbs|notesk)] play (song|music) %string% to %player% [at tick %number%] [in directory %string%]"
+        return "[(skmusic|nbs|notesk)] play (song|music) %string% to %player% [at tick %number%] [in directory %-string%]"
     }
     public override fun execute(e: Event?) {
         val p: Player = player?.getSingle(e) ?: return

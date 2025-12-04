@@ -12,6 +12,11 @@ object IngameUpdateChecker {
     @Suppress("DEPRECATION", "UNUSED")
     val joinEvent = listen<PlayerJoinEvent> {
         val player = it.player
+        val version = Main.INSTANCE.pluginMeta.version
+        if (version.contains("+")) {
+            return@listen
+        }
+
         if (Main.INSTANCE.config.getBoolean("update-checker")) {
             if (player.hasPermission("notesk.admin.version") || player.isOp) {
                 val currentVersion = Main.INSTANCE.description.version
