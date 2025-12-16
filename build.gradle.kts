@@ -74,7 +74,7 @@ repositories {
     }
 }
 
-val commandAPIVersion = "11.0.0"
+val commandAPIVersion = "11.1.0"
 
 dependencies {
     paperweight.paperDevBundle("1.21.10-R0.1-SNAPSHOT")
