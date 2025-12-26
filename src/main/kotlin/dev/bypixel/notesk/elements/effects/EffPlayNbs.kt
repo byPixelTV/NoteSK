@@ -46,8 +46,8 @@ class EffPlayNbs : Effect() {
     ): Boolean {
         this.song = expressions[0] as Expression<String>
         this.player = expressions[1] as Expression<Player>
-        this.tick = expressions[2] as Expression<Number>
-        this.directory = expressions[3] as Expression<String>
+        this.tick = expressions[2] as Expression<Number>?
+        this.directory = expressions[3] as Expression<String>?
         return true
     }
 
