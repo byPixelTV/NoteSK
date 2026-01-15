@@ -83,7 +83,7 @@ dependencies {
     bukkitLibrary("dev.jorel:commandapi-kotlin-paper:$commandAPIVersion")
     bukkitLibrary("net.axay:kspigot:1.21.0")
 
-    compileOnly("com.github.SkriptLang:Skript:2.13.2")
+    compileOnly("com.github.SkriptLang:Skript:2.14.0-pre2")
     compileOnly("com.github.koca2000:NoteBlockAPI:1.6.3")
 
 }
