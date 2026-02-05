@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm") version "2.3.10"
     id("io.papermc.paperweight.userdev") version "2.0.0-SNAPSHOT"
     id("de.eldoria.plugin-yml.bukkit") version "0.8.0"
 }
@@ -83,7 +83,7 @@ dependencies {
     bukkitLibrary("dev.jorel:commandapi-kotlin-paper:$commandAPIVersion")
     bukkitLibrary("net.axay:kspigot:1.21.0")
 
-    compileOnly("com.github.SkriptLang:Skript:2.14.0-pre2")
+    compileOnly("com.github.SkriptLang:Skript:2.14.1")
     compileOnly("com.github.koca2000:NoteBlockAPI:1.6.3")
 
 }
