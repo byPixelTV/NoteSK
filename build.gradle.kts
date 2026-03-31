@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     kotlin("jvm") version "2.3.10"
     id("io.papermc.paperweight.userdev") version "2.0.0-SNAPSHOT"
-    id("de.eldoria.plugin-yml.bukkit") version "0.8.0"
+    id("de.eldoria.plugin-yml.bukkit") version "0.9.0"
 }
 
 fun getLatestTag(): String {
