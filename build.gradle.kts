@@ -84,7 +84,7 @@ dependencies {
     bukkitLibrary("net.axay:kspigot:1.21.0")
 
     compileOnly("com.github.SkriptLang:Skript:2.14.1")
-    compileOnly("com.github.koca2000:NoteBlockAPI:1.6.3")
+    compileOnly("com.github.koca2000:NoteBlockAPI:1.7.0")
 
 }
 
